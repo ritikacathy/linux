@@ -1,0 +1,15 @@
+#!/bin/bash
+
+read -p 'Enter the username to create: ' USER_NAME
+read -p 'Enter the the name of the user: ' COMMENT
+read -p 'Enter the password: ' PASSWORD
+useradd -c "${COMMENT}" -m ${USER_NAME}
+if [[ "${?}" -ne 0 ]]
+then
+        echo "This username does not exist."
+        exit 1
+Else
+        echo "User ${USER_NAME} has been created."
+fi
+echo ${PASSWORD} | passwd --stdin ${USER_NAME}
+passwd -e ${USER_NAME}
