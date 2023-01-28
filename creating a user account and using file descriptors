@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Make sure the script is being executed with superuser privileges.
+
+if [[ "${UID}" -ne 0 ]]
+then
+echo "You must have root privileges or use sudo command"
+exit 1
+fi
+# If the user doesn't supply at least one argument, then give them help.
+
+if [[ "${UID}" -ne 0 ]]
+then
+echo "You must have root privileges or use sudo command" >&2
+exit 1
+fi
+# The first parameter is the user name.
+
+USER_NAME=${1}
+echo "Your username is: ${USER_NAME}"
+# The rest of the parameters are for the account comments.
+Shift
+COMMENT=${@}
+echo "Your full name is: ${COMMENT}"
+# Generate a password.
+PASSWORD=$(date +%s%N | sha256sum | head -c12)
+# Create the user with the password.
+echo "Your password is: ${PASSWORD}"
+# Check to see if the useradd command succeeded.
+useradd -c "${COMMENT}" -m ${USER_NAME} &> /dev/null
+# Set the password and force the password to expire
+echo ${PASSWORD} | passwd --stdin ${USER_NAME} &> /dev/null
+passwd -e ${USER_NAME} &> /dev/null
+# Check to see if the account has been created
+if [[ ${?} -ne 0 ]]
+then
+echo "Account cannot be created" >&2
+exit 1
+Fi
+# Display the host where the user was created.
+echo "host:"
+echo "${HOSTNAME}"
+exit 0
